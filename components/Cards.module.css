@@ -1,0 +1,6 @@
+.app_page_card {
+  flex: 0.85 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}

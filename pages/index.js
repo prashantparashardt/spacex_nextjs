@@ -1,65 +1,124 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import Cards from '../components/Cards'
+import Filter from '../components/Filter'
 
-export default function Home() {
+export default function Home () {
+  const [state, setState] = useState({
+    cardData: null,
+    url: 'https://api.spaceXdata.com/v3/launches?limit=100',
+    launch_success: null,
+    land_success: null,
+    launch_year: null,
+    key: 0
+  })
+  const getUrlParam = url => {
+    let params = new URLSearchParams(document.location.search.substring(1))
+    let launch = params.get('launch_success')
+    let land = params.get('land_success')
+    let year = params.get('launch_year')
+    let stateUrl = url
+    if (launch) {
+      stateUrl = stateUrl + `&launch_success=${launch}`
+    }
+    if (land) {
+      stateUrl = stateUrl + `&land_success=${land}`
+    }
+    if (year) {
+      stateUrl = stateUrl + `&launch_year=${year}`
+    }
+    setState({
+      url: stateUrl,
+      launch_success: launch,
+      land_success: land,
+      launch_year: year,
+      key: 1
+    })
+  }
+  useEffect(() => {
+    getUrlParam(state.url)
+  }, [])
+
+  useEffect(() => {
+    if (state.key > 0) {
+      axios.get(state.url).then(response => {
+        setState(prevState => {
+          return { ...prevState, cardData: response }
+        })
+      })
+    }
+  }, [state.url, state.key])
+
+  const clickFilter = (buttonClicked, filterName) => {
+    let stateUrl = new URL(state.url)
+    let url = new URL(window.location)
+    if (state[filterName] !== buttonClicked) {
+      stateUrl.searchParams.set(filterName, buttonClicked)
+      url.searchParams.set(filterName, buttonClicked)
+      window.history.replaceState(null, null, url)
+      setState(prevState => {
+        return {
+          ...prevState,
+          url: stateUrl,
+          [filterName]: buttonClicked
+        }
+      })
+    } else {
+      stateUrl.searchParams.delete(filterName)
+      url.searchParams.delete(filterName)
+      window.history.replaceState(null, null, url)
+      setState(prevState => {
+        return {
+          ...prevState,
+          url: stateUrl,
+          [filterName]: null
+        }
+      })
+    }
+  }
+
+  // const getData = () => {
+  //   const params = new URLSearchParams(window.location.search.slice(1))
+  //   const launchYear = params.get('launch_year')
+  //   const launchSuccess = params.get('launch_success')
+  //   const landSuccess = params.get('land_success')
+  //   // console.log(launchYear, launchSuccess, landSuccess)
+  //   params.delete(launchYear)
+  //   console.log(params.get('launch_year'))
+  // }
+  // useEffect(() => {
+  //   getData()
+  // }, [])
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+    <div className={styles.App}>
+      <h1 className={styles.heading}>SpaceX Launch Programs</h1>
+      <div className={styles.app_page}>
+        <Filter
+          clickFilter={clickFilter}
+          launchYear={state.launch_year}
+          launchSuccess={state.launch_success}
+          landSuccess={state.land_success}
+        />
+        {state.cardData ? (
+          state.cardData.data.length > 0 ? (
+            <Cards cardData={state.cardData} />
+          ) : (
+            <div className={styles.app_img} style={{ alignContent: 'center' }}>
+              <h1>No data found on the server</h1>
+            </div>
+          )
+        ) : (
+          <img
+            className={styles.app_img}
+            src='https://media.giphy.com/media/xT8qBhrlNooHBYR9f2/giphy.gif'
+            alt='loader'
+          />
+        )}
+      </div>
+      <h2 className={styles.bottom_div}>Developed By: Prashant Parashar</h2>
     </div>
   )
 }
