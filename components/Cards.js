@@ -7,9 +7,7 @@ function Cards ({ cardData }) {
   return (
     <div className={styles.app_page_card}>
       {cardData &&
-        cardData.data.map(item => (
-          <Card key={item.flight_number} cardData={item} />
-        ))}
+        cardData.map(item => <Card key={item.flight_number} cardData={item} />)}
     </div>
   )
 }

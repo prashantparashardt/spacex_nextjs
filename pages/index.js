@@ -5,7 +5,7 @@ import axios from 'axios'
 import Cards from '../components/Cards'
 import Filter from '../components/Filter'
 
-export default function Home () {
+export default function Home ({ launches }) {
   const [state, setState] = useState({
     cardData: null,
     url: 'https://api.spaceXdata.com/v3/launches?limit=100',
@@ -14,38 +14,21 @@ export default function Home () {
     launch_year: null,
     key: 0
   })
-  const getUrlParam = url => {
-    let params = new URLSearchParams(document.location.search.substring(1))
-    let launch = params.get('launch_success')
-    let land = params.get('land_success')
-    let year = params.get('launch_year')
-    let stateUrl = url
-    if (launch) {
-      stateUrl = stateUrl + `&launch_success=${launch}`
-    }
-    if (land) {
-      stateUrl = stateUrl + `&land_success=${land}`
-    }
-    if (year) {
-      stateUrl = stateUrl + `&launch_year=${year}`
-    }
-    setState({
-      url: stateUrl,
-      launch_success: launch,
-      land_success: land,
-      launch_year: year,
-      key: 1
-    })
-  }
   useEffect(() => {
-    getUrlParam(state.url)
+    setState(prevState => {
+      return {
+        ...prevState,
+        key: 1,
+        cardData: launches
+      }
+    })
   }, [])
 
   useEffect(() => {
     if (state.key > 0) {
       axios.get(state.url).then(response => {
         setState(prevState => {
-          return { ...prevState, cardData: response }
+          return { ...prevState, cardData: response.data }
         })
       })
     }
@@ -79,19 +62,6 @@ export default function Home () {
     }
   }
 
-  // const getData = () => {
-  //   const params = new URLSearchParams(window.location.search.slice(1))
-  //   const launchYear = params.get('launch_year')
-  //   const launchSuccess = params.get('launch_success')
-  //   const landSuccess = params.get('land_success')
-  //   // console.log(launchYear, launchSuccess, landSuccess)
-  //   params.delete(launchYear)
-  //   console.log(params.get('launch_year'))
-  // }
-  // useEffect(() => {
-  //   getData()
-  // }, [])
-
   return (
     <div className={styles.App}>
       <h1 className={styles.heading}>SpaceX Launch Programs</h1>
@@ -103,7 +73,7 @@ export default function Home () {
           landSuccess={state.land_success}
         />
         {state.cardData ? (
-          state.cardData.data.length > 0 ? (
+          state.cardData.length > 0 ? (
             <Cards cardData={state.cardData} />
           ) : (
             <div className={styles.app_img} style={{ alignContent: 'center' }}>
@@ -121,4 +91,19 @@ export default function Home () {
       <h2 className={styles.bottom_div}>Developed By: Prashant Parashar</h2>
     </div>
   )
+}
+
+Home.getInitialProps = async ctx => {
+  try {
+    console.log('hello')
+    const { data } = await axios.get(
+      'https://api.spaceXdata.com/v3/launches?limit=100'
+    )
+    return {
+      launches: data
+    }
+  } catch (e) {
+    console.log('error getting data')
+    console.log(e)
+  }
 }

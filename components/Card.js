@@ -2,7 +2,6 @@ import React from 'react'
 import styles from './Card.module.css'
 
 function Card (props) {
-  console.log(props.cardData.launch_success)
   return (
     <div className={styles.card}>
       <img
