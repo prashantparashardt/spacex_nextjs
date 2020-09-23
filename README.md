@@ -1,30 +1,28 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Checkout the live app [here](https://spacex-prashant.vercel.app)
 
-## Getting Started
+This project is created using [Next.js](https://nextjs.org/)
 
-First, run the development server:
+## To install all dependencies
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+run `npm install` in the project folder, this will install all the dependencies used in the project
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Run in development mode
+run `npm run dev` to run the app in dev mode
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Runs the app in the development mode.<br />
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+If this throw error like port 3000 is busy run on some other port y/n - y
 
-## Learn More
+## deployment
 
-To learn more about Next.js, take a look at the following resources:
+deployment is done using heroku and github, razzle-heroku plugin is also used to handle the environment variables.
+app is hosted here - https://spacex-prashant.vercel.app/
+ 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## dependencies used
+1. axios - to fetch data from server
+2. next
+3. react 
+4. express
+7. react-dom
+8. react-router-dom
